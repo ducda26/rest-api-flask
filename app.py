@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_smorest import Api
 from flask_jwt_extended import JWTManager
 import os
@@ -31,7 +31,20 @@ def create_app(db_url = None):
     #trong trường hợp chạy demo nên ko cần thiết l
     app.config["JWT_SECRET_KEY"] = "jose"
     jwt = JWTManager(app)
+    
+    @jwt.additional_claims_loader
+    def add_claims_to_jwt(identity):
+        if identity == 1:
+            return {"is_admin": True}
+        return {"is_admin": False}
 
+    @jwt.expired_token_loader
+    def expired_token_callback(jwt_header, jwt_payload):
+        return (
+            jsonify({"message": "The token has expired.", "error": "token_expired"}),
+            401,
+        )
+    
     with app.app_context():
         db.create_all()
     
