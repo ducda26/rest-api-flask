@@ -5,7 +5,6 @@ from flask_smorest import Blueprint, abort
 
 from schemas import ItemSchemas, ItemUpdateSchema
 
-from db import items
 
 blp = Blueprint("Items", "items", description="Operations on items")
 
